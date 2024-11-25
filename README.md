@@ -36,9 +36,7 @@ The backend is designed for **scalability**, **security**, and **maintainability
   - [Testing Instructions](#testing-instructions)
     - [Running Tests](#running-tests)
     - [Test Coverage](#test-coverage)
-  - [Contributing](#contributing)
-    - [Guidelines](#guidelines)
-    - [Code Style](#code-style)
+  - [Code Style](#code-style)
   - [License](#license)
   - [Credits/Attribution](#creditsattribution)
   - [Contact Information](#contact-information)
@@ -165,27 +163,6 @@ Comprehensive test cases are included for all major components (controllers, ser
 
 ---
 
-## Contributing
-
-### Guidelines
-
-Contributions are welcome! Follow these steps:
-
-1. Fork the repository.
-2. Create a feature branch:
-   ```bash
-   git checkout -b feature/my-feature
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m 'Add my feature'
-   ```
-4. Push your branch:
-   ```bash
-   git push origin feature/my-feature
-   ```
-5. Open a pull request.
-
 ### Code Style
 
 - Use **ESLint** for linting.
@@ -201,7 +178,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Credits/Attribution
 
-- **Author**: [Your Name](https://github.com/yourusername)
+- **Author**: [Your Name](https://github.com/Ruthful-Hearts)
 - **Acknowledgments**:
   - **Node.js** - Server runtime.
   - **MongoDB** - NoSQL database.
@@ -214,13 +191,13 @@ This project is licensed under the [MIT License](LICENSE).
 ## Contact Information
 
 **Maintainer**: Ruthful Hearts  
-**Email**: [Your Email Address]
+**Email**: [ruthfulhearts@gmail.com]
 
 ---
 
 ## Links
 
-- [Project Repository](https://github.com/yourusername/ruthful-hearts-merch-store-backend)
+- [Project Repository](https://github.com/Ruthful-Hearts/backend)
 
 ---
 
@@ -243,5 +220,3 @@ index.js          # Entry point for the server
 package.json      # Dependencies and scripts
 ```
 ``` 
-
-This updated version is polished, professional, and ready to be included in a repository or documentation. Let me know if you need any further adjustments!
