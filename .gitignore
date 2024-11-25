@@ -35,3 +35,4 @@ yarn-cache/
 
 # Sensitive files
 .env
+package-lock.json
