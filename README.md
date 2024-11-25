@@ -8,7 +8,7 @@ The Ruthful Hearts Merch Store Backend serves as the robust core powering an onl
 - **User Authentication and Authorization**: Secure mechanisms for customer accounts and admin access.
 - **Shopping Cart**: Intuitive shopping cart functionality to add, remove, and modify items.
 - **Order Processing**: Comprehensive order handling, including payment processing, shipping, and order tracking.
-- **Payment Integration**: Integration with payment gateways like Stripe and PayPal for secure transactions.
+- **Payment Integration**: Integration with payment gateways like Stripe and Chappa for secure transactions.
 - **Inventory Management**: Real-time tracking and adjustment of product inventory.
 - **Admin Dashboard**: A centralized interface for managing products, orders, customers, and settings.
 
@@ -178,13 +178,14 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Credits/Attribution
 
-- **Author**: [Your Name](https://github.com/Ruthful-Hearts)
+- **Author**: [Ruthful Hearts](https://github.com/Ruthful-Hearts)
 - **Acknowledgments**:
   - **Node.js** - Server runtime.
   - **MongoDB** - NoSQL database.
   - **Mongoose** - MongoDB ORM.
   - **Jest** - Testing framework.
   - **Stripe** - Payment gateway.
+  - **Chappa** - Payment gateway.
 
 ---
 
