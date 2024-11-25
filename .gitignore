@@ -1,0 +1,37 @@
+# Operating system files
+node_modules/
+npm-cache/
+yarn-cache/
+.pnp.js
+
+# IDE files
+.vscode/
+*.suo
+*.ntvs*
+*.sln
+*.pdb
+*.suo
+*.user
+*.aps
+*.pch
+*.obj
+*.ilk
+*.log
+*.ipch
+*.tlog
+*.bak
+*.tmp
+*.orig
+*.bkp
+*.old
+*.sync
+*.lock
+*.swp
+
+# Hono specific files
+.hono/
+*.hono.js
+*.hono.ts
+
+# Sensitive files
+.env
