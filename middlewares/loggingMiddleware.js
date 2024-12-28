@@ -1,4 +1,4 @@
-const logger = require('../utils/logger');
+const logger = require('../utils/loggerUtil');
 
 const logRequest = async (c, next) => {
   const startTime = Date.now();

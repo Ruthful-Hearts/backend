@@ -7,3 +7,5 @@ const notFoundHandler = async (c) => {
     404
   );
 };
+
+module.exports = notFoundHandler;
