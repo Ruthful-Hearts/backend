@@ -1,26 +1,27 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
+import { Context, Next } from 'hono';
+import jwt from 'jsonwebtoken';
+import User from '../models/userModel';
 
-const authenticate = async (req, res, next) => {
+const authMiddleware = async (c: Context, next: Next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = c.req.header('Authorization')?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({ error: 'Access denied. No token provided.' });
+      return c.json({ error: 'Access denied. No token provided.' }, 401);
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    c.set('user', decoded);
 
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(decoded.id).select('-password');
     if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+      return c.json({ error: 'User not found.' }, 404);
     }
 
-    req.userDocument = user;
-    next();
+    c.set('userDocument', user);
+    await next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid or expired token.' });
+    return c.json({ error: 'Invalid or expired token.' }, 401);
   }
 };
 
-module.exports = authenticate;
+export default authMiddleware;

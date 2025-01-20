@@ -1,31 +1,32 @@
+import { Context } from 'hono';
 import * as userService from "../services/userService";
 
-const registerUser = async (req, res) => {
+export const registerUser = async (c: Context) => {
   try {
-    const userData = req.body;
+    const userData = await c.req.json();
     const user = await userService.createUser(userData);
-    res.status(201).json({ message: "User registered successfully", user });
+    return c.json({ message: "User registered successfully", user }, 201);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return c.json({ error: error.message }, 400);
   }
 };
 
-const loginUser = async (req, res) => {
+export const loginUser = async (c: Context) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = await c.req.json();
     const { user, token } = await userService.authenticateUser(email, password);
-    res.status(200).json({ message: "Login successful", user, token });
+    return c.json({ message: "Login successful", user, token }, 200);
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    return c.json({ error: error.message }, 401);
   }
 };
 
-const getProfile = async (req, res) => {
+export const getProfile = async (c: Context) => {
   try {
-    const userId = req.user.id;
+    const userId = c.get('user').id;
     const user = await userService.getUserById(userId);
-    res.status(200).json(user);
+    return c.json(user, 200);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    return c.json({ error: error.message }, 404);
   }
 };

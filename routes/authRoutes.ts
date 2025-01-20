@@ -1,17 +1,11 @@
 import { Hono } from "hono";
-import authController from "../controllers/authController";
+import * as authController from "../controllers/authController";
 import authMiddleware from "../middlewares/authMiddleware";
-import validationMiddleware from "../middlewares/validationMiddleware";
-import { registerSchema, loginSchema } from "../validations/authSchema";
 
 const authRoutes = new Hono();
 
-authRoutes.post("/register", authController.registerUser);
-authRoutes.post(
-	"/login",
-	validationMiddleware(loginSchema),
-	authController.loginUser,
-);
-authRoutes.get("/profile", authMiddleware, authController.getProfile);
+authRoutes.post("/register", async (c) => await authController.registerUser(c));
+authRoutes.post("/login", async (c) => await authController.loginUser(c));
+authRoutes.get("/profile", authMiddleware, async (c) => await authController.getProfile(c));
 
 export default authRoutes;

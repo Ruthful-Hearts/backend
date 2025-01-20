@@ -13,8 +13,7 @@
     "format": "prettier --write \"**/*.{js,json,md}\"",
     "start:prod": "NODE_ENV=production node index.js",
     "db:seed": "node database/seeds.js",
-    "db:migrate": "node database/migrate.js",
-    "postinstall": "npm run build"
+    "db:migrate": "node database/migrate.js"
   },
   "dependencies": {
     "@babylonjs/core": "^7.35.1",
@@ -42,6 +41,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^22.10.5",
     "chai": "^5.1.2",
