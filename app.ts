@@ -8,6 +8,7 @@ import { Hono } from "hono";
 // const compressionMiddleware = require('./middleware/compressionMiddleware');
 // import httpLogger from "./middlewares/httpLogger";
 import errorHandlingMiddleware from "./middlewares/errorHandlingMiddleware";
+import corsMiddleware from "./middlewares/corsMiddleware";
 import authRoutes from "./routes/authRoutes";
 import storeRoutes from "./routes/storeRoutes";
 import adminRoutes from "./routes/adminRoutes";
@@ -24,6 +25,9 @@ const app = new Hono();
 // app.use('*', httpLogger);
 // app.use('*', generalRateLimiter);
 // app.use('*', compressionMiddleware);
+
+// Apply CORS middleware globally
+app.use('*', corsMiddleware);
 
 app.route("/auth", authRoutes);
 app.route("/stores", storeRoutes);

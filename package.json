@@ -4,7 +4,7 @@
   "description": "Backend for the Ruthful Merch Store platform, providing APIs for user authentication, store management, order handling, and payment integration.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.ts",
     "dev": "tsx watch index.ts",
     "test": "mocha --recursive tests",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
