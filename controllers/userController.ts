@@ -1,46 +1,49 @@
 import * as userService from "../services/userService";
+import type { Context } from "hono";
 
-export const getAllUsers = async (req, res) => {
-  try {
-    const filters = req.query || {};
-    const users = await userService.getAllUsers(filters);
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+export const getAllUsers = async (c: Context) => {
+	try {
+		const filters = c.req.query() || {};
+		const users = await userService.getAllUsers(filters);
+		return c.json(users, 200);
+	} catch (error) {
+		return c.json({ error: error.message }, 500);
+	}
 };
 
-export const getUserById = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const user = await userService.getUserById(userId);
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
+export const getUserById = async (c: Context) => {
+	try {
+		const userId = c.req.param("id");
+		const user = await userService.getUserById(userId);
+		return c.json(user, 200);
+	} catch (error) {
+		return c.json({ error: error.message }, 404);
+	}
 };
 
-export const updateUserProfile = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const updateData = req.body;
-    const updatedUser = await userService.updateUser(userId, updateData);
-    res
-      .status(200)
-      .json({ message: "User updated successfully", user: updatedUser });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+export const updateUser = async (c: Context) => {
+	try {
+		const userId = c.req.param("id");
+		const updateData = await c.req.json();
+		const updatedUser = await userService.updateUser(userId, updateData);
+		return c.json(
+			{ message: "User updated successfully", user: updatedUser },
+			200,
+		);
+	} catch (error) {
+		return c.json({ error: error.message }, 400);
+	}
 };
 
-export const deleteUser = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const deletedUser = await userService.deleteUser(userId);
-    res
-      .status(200)
-      .json({ message: "User deleted successfully", user: deletedUser });
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
+export const deleteUser = async (c: Context) => {
+	try {
+		const userId = c.req.param("id");
+		const deletedUser = await userService.deleteUser(userId);
+		return c.json(
+			{ message: "User deleted successfully", user: deletedUser },
+			200,
+		);
+	} catch (error) {
+		return c.json({ error: error.message }, 404);
+	}
 };
