@@ -1,41 +1,68 @@
 import Order from "../models/orderModel";
 import Product from "../models/productModel";
 
-export const createOrder = async (orderData) => {
+interface CreateOrderData {
+  user: string;
+  store: string;
+  items: Array<{
+    product: string;
+    quantity: number;
+  }>;
+  paymentMethod: string;
+}
+
+export const createOrder = async (orderData: CreateOrderData) => {
   try {
-    const { items } = orderData;
-    let totalAmount = 0;
-    for (const item of items) {
-      const product = await Product.findById(item.product);
-      if (!product) {
-        throw new Error(`Product not found: ${item.product}`);
-      }
-      if (product.stock < item.quantity) {
-        throw new Error(`Insufficient stock for product: ${product.name}`);
-      }
-      totalAmount += item.quantity * product.price;
-      product.stock -= item.quantity;
-      await product.save();
-    }
-    const order = new Order({ ...orderData, totalAmount });
+    // Calculate prices and total amount
+    const orderItems = await Promise.all(
+      orderData.items.map(async (item) => {
+        const product = await Product.findById(item.product);
+        if (!product) {
+          throw new Error(`Product ${item.product} not found`);
+        }
+        return {
+          product: item.product,
+          quantity: item.quantity,
+          price: product.price
+        };
+      })
+    );
+
+    const totalAmount = orderItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    const order = new Order({
+      ...orderData,
+      items: orderItems,
+      totalAmount
+    });
+
     await order.save();
-    return order;
-  } catch (error) {
+    
+    // Return order with orderCode
+    return {
+      ...order.toObject(),
+      message: `Your order has been created successfully. Your order code is: ${order.orderCode}`
+    };
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
 
-export const getOrderById = async (orderId) => {
+export const getOrderById = async (orderId: string) => {
   try {
     const order = await Order.findById(orderId)
       .populate("user", "name email")
       .populate("store", "name")
       .populate("items.product", "name price");
+    
     if (!order) {
       throw new Error("Order not found");
     }
     return order;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
@@ -47,12 +74,16 @@ export const getAllOrders = async (filters = {}) => {
       .populate("store", "name")
       .populate("items.product", "name price");
     return orders;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
 
-export const updateOrder = async (orderId, updateData) => {
+export const updateOrder = async (orderId: string, updateData: {
+  status?: string;
+  paymentStatus?: string;
+  paymentMethod?: string;
+}) => {
   try {
     const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, {
       new: true,
@@ -65,54 +96,99 @@ export const updateOrder = async (orderId, updateData) => {
       throw new Error("Order not found");
     }
     return updatedOrder;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
 
-export const updateOrderStatus = async (orderId, status) => {
+export const updateOrderStatus = async (orderId: string, status: string) => {
   try {
-    if (
-      !["pending", "confirmed", "shipped", "delivered", "canceled"].includes(
-        status,
-      )
-    ) {
-      throw new Error("Invalid order status");
-    }
-    const updatedOrder = await Order.findByIdAndUpdate(
+    const order = await Order.findByIdAndUpdate(
       orderId,
       { status },
-      { new: true },
-    ).populate("user", "name email");
-    if (!updatedOrder) {
+      { new: true }
+    );
+    if (!order) {
       throw new Error("Order not found");
     }
-    return updatedOrder;
-  } catch (error) {
+    return order;
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
 
-export const getOrdersByUser = async (userId) => {
+export const getUserOrders = async (userId: string) => {
   try {
-    const orders = await Order.find({ user: userId }).populate(
-      "items.product",
-      "name price",
-    );
+    const orders = await Order.find({ user: userId })
+      .populate("store", "name")
+      .populate("items.product", "name price")
+      .sort({ createdAt: -1 });
     return orders;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
 
-export const getOrdersByStore = async (storeId) => {
+export const getStoreOrders = async (storeId: string) => {
   try {
-    const orders = await Order.find({ store: storeId }).populate(
-      "items.product",
-      "name price",
-    );
+    const orders = await Order.find({ store: storeId })
+      .populate("user", "name email")
+      .populate("items.product", "name price")
+      .sort({ createdAt: -1 });
     return orders;
-  } catch (error) {
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+// Add a new method to find order by code
+export const getOrderByCode = async (orderCode: string, userId: string) => {
+  try {
+    const order = await Order.findOne({ orderCode })
+      .populate("store", "name")
+      .populate("items.product", "name price");
+    
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    // Only allow the order owner to see their order code
+    if (order.user.toString() !== userId) {
+      throw new Error("Unauthorized access to order");
+    }
+
+    return order;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const completeOrderByCode = async (orderCode: string) => {
+  try {
+    const order = await Order.findOne({ orderCode });
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    // Update order status and remove orderCode
+    const updatedOrder = await Order.findByIdAndUpdate(
+      order._id,
+      { 
+        status: "completed",
+        orderCode: null  // Remove the order code
+      },
+      { new: true }
+    ).populate("items.product", "name price");
+
+    if (!updatedOrder) {
+      throw new Error("Failed to complete order");
+    }
+
+    return {
+      message: "Order completed successfully",
+      order: updatedOrder
+    };
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };

@@ -1,10 +1,35 @@
 import { Hono } from "hono";
+import * as productController from "../controllers/productController";
+import { authMiddleware, authorizeRoles } from "../middlewares/authMiddleware";
 
 const productRoutes = new Hono();
 
-productRoutes.post("/create", (ctx) => ctx.text("Product created!"));
-productRoutes.get("/read", (ctx) => ctx.text("Product details!"));
-productRoutes.put("/update", (ctx) => ctx.text("Product updated!"));
-productRoutes.delete("/delete", (ctx) => ctx.text("Product deleted!"));
+// Public routes
+productRoutes.get("/", productController.getAllProducts);
+productRoutes.get("/:id", productController.getProduct);
+productRoutes.get("/store/:storeId", productController.getStoreProducts);
+
+// Protected routes
+productRoutes.use("*", authMiddleware);
+
+// Store owner routes
+productRoutes.post("/create", 
+  authorizeRoles(["store_owner"]), 
+  productController.createProduct
+);
+productRoutes.put("/:id", 
+  authorizeRoles(["store_owner"]), 
+  productController.updateProduct
+);
+productRoutes.delete("/:id", 
+  authorizeRoles(["store_owner"]), 
+  productController.deleteProduct
+);
+
+// Admin routes
+productRoutes.put("/:id/status", 
+  authorizeRoles(["admin"]), 
+  productController.toggleProductStatus
+);
 
 export default productRoutes;

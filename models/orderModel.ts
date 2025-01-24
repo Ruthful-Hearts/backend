@@ -1,90 +1,63 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-export interface IOrder {
+export interface IOrder extends Document {
 	user: mongoose.Types.ObjectId;
 	store: mongoose.Types.ObjectId;
-	items: {
+	orderCode: string;
+	items: Array<{
 		product: mongoose.Types.ObjectId;
 		quantity: number;
 		price: number;
-	}[];
+	}>;
 	totalAmount: number;
-	status: "pending" | "confirmed" | "shipped" | "delivered" | "canceled";
-	payment?: mongoose.Types.ObjectId;
-	shippingAddress: {
-		addressLine1: string;
-		addressLine2?: string;
-		city: string;
-		state?: string;
-		postalCode: string;
-		country: string;
-	};
+	status: string;
+	paymentStatus: string;
+	paymentMethod: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
 const orderSchema = new mongoose.Schema<IOrder>(
 	{
-		user: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
-			required: true,
+		user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store", required: true },
+		orderCode: { 
+			type: String, 
+			unique: true
 		},
-		store: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Store",
-			required: true,
-		},
-		items: [
-			{
-				product: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "Product",
-					required: true,
-				},
-				quantity: {
-					type: Number,
-					required: true,
-					min: 1,
-				},
-				price: {
-					type: Number,
-					required: true,
-				},
-			},
-		],
-		totalAmount: {
-			type: Number,
-			required: true,
-			min: 0,
-		},
+		items: [{
+			product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+			quantity: { type: Number, required: true, min: 1 },
+			price: { type: Number, required: true, min: 0 }
+		}],
+		totalAmount: { type: Number, required: true, min: 0 },
 		status: {
 			type: String,
-			enum: ["pending", "confirmed", "shipped", "delivered", "canceled"],
-			default: "pending",
+			enum: ["pending", "completed", "cancelled"],
+			default: "pending"
 		},
-		payment: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Payment",
+		paymentStatus: {
+			type: String,
+			enum: ["pending", "completed", "failed", "refunded"],
+			default: "pending"
 		},
-		shippingAddress: {
-			addressLine1: { type: String, required: true },
-			addressLine2: { type: String },
-			city: { type: String, required: true },
-			state: { type: String },
-			postalCode: { type: String, required: true },
-			country: { type: String, required: true },
-		},
-		createdAt: { type: Date, default: Date.now },
-		updatedAt: { type: Date, default: Date.now },
+		paymentMethod: {
+			type: String,
+			enum: ["credit_card", "chappa", "bank_transfer"],
+			required: true
+		}
 	},
-	{
-		timestamps: true,
-	},
+	{ timestamps: true }
 );
 
-orderSchema.pre("save", function (next) {
-	this.updatedAt = new Date();
+// Generate unique order code before saving
+orderSchema.pre('save', async function(next) {
+	const date = new Date();
+	const year = date.getFullYear().toString().slice(-2);
+	const month = (date.getMonth() + 1).toString().padStart(2, '0');
+	const day = date.getDate().toString().padStart(2, '0');
+	const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+	this.orderCode = `ORD-${year}${month}${day}-${random}`;
 	next();
 });
 

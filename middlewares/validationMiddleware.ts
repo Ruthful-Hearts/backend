@@ -1,24 +1,28 @@
+import { Context, Next } from 'hono';
+import { Schema } from 'joi';
+
 /**
  * Validation Middleware
  * Validates request data against a Joi schema.
  * @param {Object} schema - Joi schema to validate request data.
  * @returns {Function} Middleware function.
  */
-const validationMiddleware = (schema) => async (req, res, next) => {
+const validationMiddleware = (schema: Schema) => async (c: Context, next: Next) => {
   try {
-    const { error } = schema.validate(req.body, { abortEarly: false }); // Validate request body
+    const body = await c.req.json();
+    const { error } = schema.validate(body, { abortEarly: false });
     if (error) {
       const validationErrors = error.details.map((detail) => detail.message);
-      return res.status(400).json({
+      return c.json({
         error: true,
         message: 'Validation failed',
         details: validationErrors,
-      });
+      }, 400);
     }
-    next(); // Proceed to the next middleware or controller
-  } catch (err) {
-    res.status(500).json({ error: true, message: 'Server error during validation' });
+    await next();
+  } catch (error: any) {
+    return c.json({ error: true, message: 'Server error during validation' }, 500);
   }
 };
 
-module.exports = validationMiddleware;
+export default validationMiddleware;

@@ -1,30 +1,38 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-export type IStore = {
+export interface IStore extends Document {
 	name: string;
 	description: string;
-	logo: string;
-	bannerImage: string;
+	logo?: string;
+	banner?: string;
 	owner: mongoose.Types.ObjectId;
-	businessRegistrationNumber: string;
+	contactInfo: {
+		email: string;
+		phone: string;
+		address: string;
+	};
 	isApproved: boolean;
 	isActive: boolean;
 	createdAt: Date;
 	updatedAt: Date;
-};
+}
 
 const storeSchema = new mongoose.Schema<IStore>(
 	{
 		name: { type: String, required: true, trim: true },
-		description: { type: String, trim: true },
-		logo: { type: String, trim: true },
-		bannerImage: { type: String, trim: true },
+		description: { type: String, required: true },
+		logo: { type: String },
+		banner: { type: String },
 		owner: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			required: true,
 		},
-		businessRegistrationNumber: { type: String, trim: true },
+		contactInfo: {
+			email: { type: String, required: true },
+			phone: { type: String, required: true },
+			address: { type: String, required: true }
+		},
 		isApproved: { type: Boolean, default: false },
 		isActive: { type: Boolean, default: true },
 		createdAt: { type: Date, default: Date.now },
