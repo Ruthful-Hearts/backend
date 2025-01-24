@@ -1,15 +1,15 @@
-const { Hono } = require('hono');
-const userController = require('../controllers/userController');
-const authenticate = require('../middleware/authMiddleware');
-const authorizeRoles = require('../middleware/roleMiddleware');
+import { Hono } from "hono";
+import * as userController from "../controllers/userController";
+import * as authorizeRoles from "../middlewares/roleMiddleware";
+import * as authenticate from "../middlewares/authMiddleware";
 
 const userRoutes = new Hono();
 
-userRoutes.use('*', authenticate);
+// userRoutes.use("*", authenticate);
 
-userRoutes.get('/', authorizeRoles(['admin']), userController.getAllUsers);
-userRoutes.get('/:id', userController.getUserById);
-userRoutes.put('/:id', userController.updateUserProfile);
-userRoutes.delete('/:id', authorizeRoles(['admin']), userController.deleteUser);
+userRoutes.get("/", userController.getAllUsers);
+userRoutes.get("/:id", userController.getUserById);
+userRoutes.put("/:id", userController.updateUser);
+userRoutes.delete("/:id", userController.deleteUser);
 
-module.exports = userRoutes;
+export default userRoutes;

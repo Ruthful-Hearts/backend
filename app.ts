@@ -9,6 +9,7 @@ import { Hono } from "hono";
 // import httpLogger from "./middlewares/httpLogger";
 import errorHandlingMiddleware from "./middlewares/errorHandlingMiddleware";
 import corsMiddleware from "./middlewares/corsMiddleware";
+import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import storeRoutes from "./routes/storeRoutes";
 import adminRoutes from "./routes/adminRoutes";
@@ -30,6 +31,7 @@ const app = new Hono();
 app.use('*', corsMiddleware);
 
 app.route("/auth", authRoutes);
+app.route("/user", userRoutes);
 app.route("/stores", storeRoutes);
 app.route("/admin", adminRoutes);
 app.route("/order", orderRoutes);
