@@ -17,6 +17,7 @@ import orderRoutes from "./routes/orderRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import productRoutes from "./routes/productRoutes";
 import reviewRoutes from "./routes/reviewRoutes";
+import { auth } from "./utils/auth";
 
 const app = new Hono();
 // securityMiddleware(app);
@@ -28,9 +29,11 @@ const app = new Hono();
 // app.use('*', compressionMiddleware);
 
 // Apply CORS middleware globally
-app.use('*', corsMiddleware);
+app.use("*", corsMiddleware);
+app.on(["POST", "GET"], "/auth/*", async (c) => {
+	return await auth.handler(c.req.raw);
+});
 
-app.route("/auth", authRoutes);
 app.route("/user", userRoutes);
 app.route("/stores", storeRoutes);
 app.route("/admin", adminRoutes);
