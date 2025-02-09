@@ -83,13 +83,16 @@ export const updateOrder = async (orderId: string, updateData: {
   status?: string;
   paymentStatus?: string;
   paymentMethod?: string;
+  paymentDetails?: {
+    txRef?: string;
+    paymentDate?: Date;
+  };
 }) => {
   try {
     const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, {
       new: true,
       runValidators: true,
-    })
-      .populate("user", "name email")
+    }).populate("user", "name email")
       .populate("store", "name")
       .populate("items.product", "name price");
     if (!updatedOrder) {

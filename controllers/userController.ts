@@ -6,7 +6,7 @@ export const getAllUsers = async (c: Context) => {
 		const filters = c.req.query() || {};
 		const users = await userService.getAllUsers(filters);
 		return c.json(users, 200);
-	} catch (error) {
+	} catch (error: any) {
 		return c.json({ error: error.message }, 500);
 	}
 };
@@ -16,7 +16,7 @@ export const getUserById = async (c: Context) => {
 		const userId = c.req.param("id");
 		const user = await userService.getUserById(userId);
 		return c.json(user, 200);
-	} catch (error) {
+	} catch (error: any) {
 		return c.json({ error: error.message }, 404);
 	}
 };
@@ -30,7 +30,7 @@ export const updateUser = async (c: Context) => {
 			{ message: "User updated successfully", user: updatedUser },
 			200,
 		);
-	} catch (error) {
+	} catch (error:any) {
 		return c.json({ error: error.message }, 400);
 	}
 };
@@ -43,7 +43,7 @@ export const deleteUser = async (c: Context) => {
 			{ message: "User deleted successfully", user: deletedUser },
 			200,
 		);
-	} catch (error) {
+	} catch (error:any) {
 		return c.json({ error: error.message }, 404);
 	}
 };

@@ -8,8 +8,24 @@ dotenv.config();
 
 connectDB();
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
-serve(app, (info) => {
-  console.log(`🌐 Server is running at http://localhost:${info.port}`);
-});
+const startServer = async () => {
+  try {
+    await serve({
+      fetch: app.fetch,
+      port: PORT
+    }, (info) => {
+      console.log(`Server is running on port ${info.port}`);
+    });
+  } catch (error: any) {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use. Try using a different port.`);
+      process.exit(1);
+    }
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();

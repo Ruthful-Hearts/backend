@@ -15,6 +15,10 @@ export interface IOrder extends Document {
 	paymentMethod: string;
 	createdAt: Date;
 	updatedAt: Date;
+	paymentDetails: {
+		txRef: string;
+		paymentDate: Date;
+	};
 }
 
 const orderSchema = new mongoose.Schema<IOrder>(
@@ -45,6 +49,10 @@ const orderSchema = new mongoose.Schema<IOrder>(
 			type: String,
 			enum: ["credit_card", "chappa", "bank_transfer"],
 			required: true
+		},
+		paymentDetails: {
+			txRef: { type: String },
+			paymentDate: { type: Date }
 		}
 	},
 	{ timestamps: true }
